@@ -27,6 +27,5 @@ public class SelecionarNoticiaServlet extends HttpServlet {
             Json js= new Json();
             pw.print(js.enviaNoticia(noticia));
           //PrintWriter
-          pw.close();
       }
 }
