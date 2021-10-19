@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Página de Cadastro</title>
+    <!--cdns-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!--CSS-->
+    <link rel="stylesheet" href="gerenciamentoStyle.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    <script>
+     async function buscaJsonEx(param, id) {
+        var ans=null
+        var request = await $.ajax({
+            url: "Selecionar" + param.charAt(0).toUpperCase() + param.slice(1),
+            type: 'POST',
+            data: id,
+            async: true,
+            success:  function (json) {
+                alert("DeuCerto\n");
+                console.log(json);
+                console.log(JSON.parse(json.replaceAll("'", '"')));
+                ans=JSON.parse(json.replaceAll("'", '"'));
+            }
+        });
+        /*request.done(function (msg) {
+            $("#log").html(msg);
+        });
+        request.fail(function (jqXHR, textStatus) {
+            alert("Request failed: " + textStatus);
+        });*/
+        console.log(request);
+        return ans;
+    }
+        function verificaAdm() {
+            if ($("#txtUsername").val() == "") {
+                $("#txtUsername").focus();
+            } else if ($("#txtSenha").val() == "") {
+                $("#txtSenha").focus();
+            } else {
+                //enviamos por ajax o json com os dados para a página que irá verificar os dados
+                /*  var request = $.ajax({
+                       url: "link",
+                       type: 'POST',
+                       data: { "username": $("#txtUsername").val(), "senha": $("#txtSenha").val() },
+                       async: true,
+                       success: function (mensagem) {
+                           $("section").text(`<div class="exibe" id="menu">
+                            <h4>Escolha uma categoria</h4>
+                            <select id="opcSelect" class="form-control">
+                                <option value="notícia">Notícia</option>
+                                <option value="time">Time</option>
+                                <option value="marca">Marca</option>
+                                <option value="liga">Liga</option>
+                            </select>
+                            <button id="cadastrar" class="btn btn-outline-success btn_categorias"
+                                value="cadastrar">Cadastrar</button>
+                            <button id="editar" class="btn btn-outline-warning btn_categorias" value="editar">Editar</button>
+                            <button id="excluir" class="btn btn-outline-danger btn_categorias" value="excluir">Excluir</button>
+                        </div>
+                        <div class="exibe" id="corpo" style="display: none"></div>`);
+                       }
+                       //colocar mensagem de erro
+                   })
+                    request.done(function (msg) {
+                        $("#log").html(msg);
+                    });
+                    request.fail(function (jqXHR, textStatus) {
+                        alert("Request failed: " + textStatus);
+                    });*/
+            }
+        }
+        //variável onde vamos guardar qual das opções
+        //de gerenciamento será feita, para facilitar
+        let acao = "";
+        let categoria = "";
+        //chamada da função para editar
+        async function editar(param) {
+            console.log("editar");
+            let json = await buscaJsonEx(param, $("#opcSelectG option:selected").val());
+            console.log(json)
+        };
+        //chamada da função para cadastrar
+        function cadastrar() {
+            //vamos direcionar para a função de cadastramento
+            //da categoria
+            if (categoria == "notícia") {
+                cadastrarNoticia();
+            } else if (categoria == "time") {
+                cadastrarTime();
+            } else if (categoria == "marca") {
+                cadastrarMarca();
+            } else {
+                cadastrarLiga();
+            }
+        }
+        function cadastrarNoticia() {
+            $("#corpo").text(``)
+            $("#corpo").show()
+            $("#corpo").append(`
+            <div id="formCorpo">
+                    <h4>Cadastrando uma nova notícia</h4>
+                    <div class="form-group">
+                        <label class="form-label">Título</label>
+                        <label style = "color: red;">*</label>
+                        <input type="text" id="tituloNoticia" class="form-control"
+                            placeholder="Insira o título da notícia">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subtítulo</label>
+                        <label style = "color: red;">*</label>
+                        <textarea id="subtituloNoticia" class="form-control"
+                            placeholder="Insira o subtítulo da notícia"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Corpo</label>
+                        <label style = "color: red;">*</label>
+                        <textarea style="height: 150px;" id="conteudoNoticia" class="form-control"
+                            placeholder="Insira o conteúdo da notícia" aria-label="With textarea"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label select-label">Times - Ainda em construção</label>
+                        <select name="time" id="slcTimes" class="form-control">
+                            <option value="0">Selecionar time</option>
+                            <option value="1">Time 1</option>
+                            <option value="2">Time 2</option>
+                            <option value="3">Time 3</option>
+                            <option value="4">Time 4</option>
+                            <option value="5">Time 5</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label select-label">Marcas - Ainda em construção</label>
+                        <select name="marca" id="slcMarcas" class="form-control">
+                            <option value="0">Selecionar marca</option>
+                            <option value="1">Marca 1</option>
+                            <option value="2">Marca 2</option>
+                            <option value="3">Marca 3</option>
+                            <option value="4">Marca 4</option>
+                            <option value="5">Marca 5</option>
+                        </select>
+                    </div>
+                    <label class="form-label">Imagem - Ainda em construção</label>
+                    <div class="form-group custom-file">
+                        <input type="file" class="custom-file-input" id="customFile"
+                            accept="image/png, image/gif, image/jpeg">
+                        <label class="custom-file-label" for="customFile" style="float: left !important;">Insira imagem</label>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <button type="submit" id="finalizaCadastro" style="margin-top: 20px;" onclick="finalizaCadastroNoticia()" class="btn btn-outline-light form-control">Finalizar
+                            cadastro</button>
+                    </div>
+                </div>`)
+        }
+        function finalizaCadastroNoticia() {
+            //verifica os campos obrigatórios
+            if ($("#tituloNoticia").val() == "") {
+                $("#tituloNoticia").focus();
+            } else if ($("#subtituloNoticia").val() == "") {
+                $("#subtituloNoticia").focus();
+            } else if ($("#conteudoNoticia").val() == "") {
+                $("#conteudoNoticia").focus();
+            } else {
+                let noticiaCompleta = { "titulo": $("#tituloNoticia").val(), "subtitulo": $("#subtituloNoticia").val(), "conteudo": $("#conteudoNoticia").val(), "times": $("#slcTimes").val(), "marcas": $("#slcMarcas").val() }
+                //se time/marca/liga == 0, não será cadastrado (nas classes)
+                //var menuId = $( "ul.nav" ).first().attr( "id" );
+                console.log(noticiaCompleta);
+                var request = $.ajax({
+                    url: "CadastrarNoticia",
+                    type: 'POST',
+                    contentType: "application/json",
+                    data: noticiaCompleta,
+                    async: true,
+                    success: function (response) {
+                        alert("Notícia cadastrada com sucesso!!!")
+                        $("#formCorpo input, textarea, #customFile").val("");
+                    }
+                })
+                request.done(function (msg) {
+                    $("#log").html(msg);
+                });
+                request.fail(function (jqXHR, textStatus) {
+                    alert("Request failed: " + textStatus);
+                });
+                console.log(request);
+            }
+        }
+        function cadastrarTime() {
+            $("#corpo").text(``)
+            $("#corpo").show()
+            $("#corpo").append(`
+            <div id="formCorpo">
+                    <h4>Cadastrando um novo time</h4>
+                    <div class="form-group">
+                        <label class="form-label">Nome</label>
+                        <label style = "color: red;">*</label>
+                        <input type="text" id="nomeTime" class="form-control"
+                            placeholder="Insira o nome do time">
+                    </div>
+                    <label class="form-label " >Escudo</label>
+                    <label style = "color: red;">* - Em construção</label>
+                    <div class="form-group custom-file">
+                        <input type="file" class="custom-file-input" id="customFile"
+                            accept="image/png, image/gif, image/jpeg">
+                        <label class="custom-file-label" for="customFile"">Insira uma foto do escudo</label>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <button type="submit" id="finalizaCadastro" style="margin-top: 20px;" onclick="finalizaCadastroTime()" class="btn btn-outline-light form-control">Finalizar
+                            cadastro</button>
+                    </div>
+                </div>`)
+        }
+        function finalizaCadastroTime() {
+            //verifica os campos obrigatórios
+            if ($("#nomeTime").val() == "") {
+                $("#nomeTime").focus();
+            }
+            /*else if ($("#customFile").val() == "") {
+                $("#customFile").focus();
+            }*/ else {
+                let timeCompleto = { "nome": $("#nomeTime").val(), "escudo": $("#customFile").val() }
+                console.log(timeCompleto);
+                var request = $.ajax({
+                    url: "CadastrarTime",
+                    type: 'POST',
+                    data: timeCompleto,
+                    async: true,
+                    success: function (mensagem) {
+                        alert("Time cadastrado com sucesso!!!")
+                        $("#formCorpo input, textarea, #customFile").val("");
+                    }
+                })
+                request.done(function (msg) {
+                    $("#log").html(msg);
+                });
+                request.fail(function (jqXHR, textStatus) {
+                    alert("Request failed: " + textStatus);
+                });
+                console.log(request);
+            }
+        }
+        function cadastrarMarca() {
+            $("#corpo").text(``)
+            $("#corpo").show()
+            $("#corpo").append(`
+            <div id="formCorpo">
+                    <h4>Cadastrando uma nova marca</h4>
+                    <div class="form-group">
+                        <label class="form-label">Nome</label>
+                        <label style = "color: red;">*</label>
+                        <input type="text" id="nomeMarca" class="form-control"
+                            placeholder="Insira o nome da marca">
+                    </div>
+                    <label class="form-label " >Logo</label>
+                    <label style = "color: red;">* - Em construção</label>
+                    <div class="form-group custom-file">
+                        <input type="file" class="custom-file-input" id="customFile"
+                            accept="image/png, image/gif, image/jpeg">
+                        <label class="custom-file-label" for="customFile"">Insira uma foto da logo</label>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <button type="submit" id="finalizaCadastro" style="margin-top: 20px;" onclick="finalizaCadastroMarca()" class="btn btn-outline-light form-control">Finalizar
+                            cadastro</button>
+                    </div>
+                </div>`)
+        }
+        function finalizaCadastroMarca() {
+            //verifica os campos obrigatórios
+            if ($("#nomeMarca").val() == "") {
+                $("#nomeMarca").focus();
+            } /*else if ($("#customFile").val() == "") {
+                $("#customFile").focus();
+            }*/ else {
+                let marcaCompleto = { "nome": $("#nomeMarca").val(), "logo": $("#customFile").val() }
+                //IMAGEMMM
+                var request = $.ajax({
+                    url: "CadastrarMarca",
+                    type: 'POST',
+                    data: marcaCompleto,
+                    async: true,
+                    success: function (mensagem) {
+                        alert("Marca cadastrada com sucesso!!!")
+                        $("#formCorpo input, textarea, #customFile").val("");
+                    }
+                })
+                request.done(function (msg) {
+                    $("#log").html(msg);
+                });
+                request.fail(function (jqXHR, textStatus) {
+                    alert("Request failed: " + textStatus);
+                });
+            }
+        }
+        function cadastrarLiga() {
+            $("#corpo").text(``)
+            $("#corpo").show()
+            $("#corpo").append(`
+            <div id="formCorpo">
+                    <h4>Cadastrando uma nova liga</h4>
+                    <div class="form-group">
+                        <label class="form-label">Nome</label>
+                        <label style = "color: red;">*</label>
+                        <input type="text" id="nomeLiga" class="form-control"
+                            placeholder="Insira o nome da liga">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">País de origem</label>
+                        <label style = "color: red;">*</label>
+                        <input id="paisLiga" class="form-control"
+                            placeholder="Insira o país de origem da liga">
+                    </div>
+                    <label class="form-label " >Símbolo</label>
+                    <label style = "color: red;">* - Em construção</label>
+                    <div class="form-group custom-file">
+                        <input type="file" class="custom-file-input" id="customFile"
+                            accept="image/png, image/gif, image/jpeg">
+                        <label class="custom-file-label" for="customFile"">Insira o símbolo da liga</label>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <button type="submit" id="finalizaCadastro" style="margin-top: 20px;" onclick="finalizaCadastroLiga()" class="btn btn-outline-light form-control">Finalizar
+                            cadastro</button>
+                    </div>
+                </div>`)
+        }
+        function finalizaCadastroLiga() {
+            //verifica os campos obrigatórios
+            if ($("#nomeLiga").val() == "") {
+                $("#nomeLiga").focus();
+            } else if ($("#paisLiga").val() == "") {
+                $("#paisLiga").focus();
+            } /*else if ($("#customFile").val() == "") {
+                $("#customFile").focus();
+            }*/ else {
+                let ligaCompleta = { "nome": $("#nomeLiga").val(), "paisOrigem": $("#paisLiga").val(), "simbolo": null/*"simbolo": $("#customFile").val() */ }
+                //IMAGEMMM
+                var request = $.ajax({
+                    url: "CadastrarLiga",
+                    type: 'POST',
+                    data: ligaCompleta,
+                    async: true,
+                    success: function (mensagem) {
+                        alert("Liga cadastrada com sucesso!!!")
+                        $("#formCorpo input, textarea, #customFile").val("");
+                    }
+                })
+                request.done(function (msg) {
+                    $("#log").html(msg);
+                });
+                request.fail(function (jqXHR, textStatus) {
+                    alert("Request failed: " + textStatus);
+                });
+                console.log(request);
+            }
+        }
+        function excluir(param) {
+            console.log("Excluir" + param.charAt(0).toUpperCase() + param.slice(1))
+            //if (param != "noticia") {
+            var request = $.ajax({
+                url: "Excluir" + param.charAt(0).toUpperCase() + param.slice(1),
+                type: 'POST',
+                data: $("#opcSelectG option:selected").val(),
+                async: true,
+                success: function (mensagem) {
+                    alert(param.charAt(0).toUpperCase() + param.slice(1) + " excluído com sucesso!!!")
+                }
+            });
+            request.done(function (msg) {
+                $("#log").html(msg);
+            });
+            request.fail(function (jqXHR, textStatus) {
+                alert("Request failed: " + textStatus);
+            });
+            console.log(request);
+            /*  } else {
+                  if ($("#formCorpo input").val() == "") {
+                      $("#formCorpo input").focus();
+                  } else {
+                      //temos que pegar a notícia e exibir para o usuário confirmar a exclusão
+                      var request = $.ajax({
+                          url: "ExcluirNoticia",
+                          type: 'POST',
+                          data: $("#formCorpo input").val(),
+                          async: true,
+                          success: function (mensagem) {
+                              alert("Notícia excluída com sucesso!!!")
+                          }
+                      })
+                      request.done(function (msg) {
+                          $("#log").html(msg);
+                      });
+                      request.fail(function (jqXHR, textStatus) {
+                          alert("Request failed: " + textStatus);
+                      });
+                      console.log(request);
+                  }
+              }*/
+        }
+        $(document).ready(function () {
+            //exibe o login
+            /*$("section").text(`<div class="exibe" id="login">
+                <h4>Faça o login</h4>
+                <div class="form-group">
+                    <label class="form-label">UserName</label>
+                    <label style="color: red;">*</label>
+                    <input type="text" id="txtUsername" class="form-control" placeholder="Insira o seu username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Senha</label>
+                    <label style="color: red;">*</label>
+                    <div class="input-group">
+                        <input class="form-control" id="txtSenha" type="password" name="senha"
+                            placeholder="Insira sua senha" required style="margin: 0px !important;">
+                        <div class="input-group-prepend" id="olho" onclick="verSenha()">
+                            <div class="input-group-text" style="margin: 0px !important;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                                    <path
+                                        d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class=" form-group">
+                    <button type="submit" id="verificaAdm" style="margin-top: 20px;" onclick="verificaAdm()"
+                        class="btn btn-outline-light form-control">Entrar</button>
+                </div>
+            </div>`);*/
+            //cliques nos botões do menu
+            $("#menu button").click(function () {
+                //identificamos o botão clicado e guardamo seu value
+                acao = $(this).val();
+                //guardamos a categoria selecionada
+                categoria = $("#opcSelect option:selected").val();
+                //caso a ação selecionada não seja uma cadastrar
+                //vamos exibir um select para o administrador selecionar
+                //qual das cadastradas vão ser editada ou excluida
+                if (acao != "cadastrar") {
+                    //aqui vamos acessar o futuro json para pegar
+                    //os dados cadastrados e exibir no select
+                    //limpa a div onde vamos exibir
+                    $("#corpo").text(``);
+                    //mostra ela
+                    $("#corpo").show();
+                    $("#corpo").append(`<div id="formCorpo"></form>`);
+                    $("#formCorpo").append(`<h4>Qual ${categoria} deseja ${acao}?</h4>`);
+                    if (categoria == "notícia") {
+                        //adiciona o html
+                        /* $("#formCorpo").append(`
+                             <br>
+                             <h6>Insira o código da notícia</h6>
+                             <input type = "number" class = "form-control" required/>
+                             <br>`);
+                         //para tirar o acento da palavra*/
+                        categoria = "noticia";
+                    }
+                    //adiciona o html
+                    $("#formCorpo").append(`
+                            <br>
+                            <select id="opcSelectG" class="form-control" required>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                            <br>`);
+                    $("#formCorpo").append(`<button id="prosseguir" type="submit" class="btn btn-outline-light" onclick="${acao}('${categoria}')" >Prosseguir</button></div>`);
+                } else {
+                    cadastrar();
+                }
+            });
+            /*$('.slcTimes').multiselect({
+                nonSelectedText: 'Selecione os times relacionados com a notícia',
+                enableFiltering: true,
+                enableCaseInsensitiveFiltering: true,
+                buttonWidth: '100%'
+            });
+            <div class="form-group slcBox">
+                        <!--multiple-->
+                        <label class="form-label select-label">Marcas</label>
+                        <select id="sclMarcas" name="sclMarcas[]" class="form-control sclMarcas">
+                            <options value = "1">marca 1</options>
+                            </select>
+                    </div> */
+        });
+    </script>
+</head>
+<body>
+    <div id="tudo">
+        <header>
+            <h1>Soccer Shirt</h1>
+            <h5>Área de Gerenciamento</h5>
+        </header>
+        <section>
+            <div class="exibe" id="menu">
+                <h4>Escolha uma categoria</h4>
+                <select id="opcSelect" class="form-control">
+                    <option value="notícia">Notícia</option>
+                    <option value="time">Time</option>
+                    <option value="marca">Marca</option>
+                    <option value="liga">Liga</option>
+                </select>
+                <button id="cadastrar" class="btn btn-outline-success btn_categorias"
+                    value="cadastrar">Cadastrar</button>
+                <button id="editar" class="btn btn-outline-warning btn_categorias" value="editar">Editar</button>
+                <button id="excluir" class="btn btn-outline-danger btn_categorias" value="excluir">Excluir</button>
+            </div>
+            <div class="exibe" id="corpo" style="display: none"></div>
+        </section>
+    </div>
+</body>
+</html>
