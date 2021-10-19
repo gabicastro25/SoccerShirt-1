@@ -45,6 +45,10 @@
       <servlet-name>Selecionar_Noticia</servlet-name>
       <servlet-class>SelecionarNoticiaServlet</servlet-class>
   </servlet>
+  <servlet>
+      <servlet-name>Selecionar_Noticias</servlet-name>
+      <servlet-class>SelecionarAllNoticiasServlet</servlet-class>
+  </servlet>
     <servlet-mapping>
         <servlet-name>Cadastrar_Noticia</servlet-name>
         <url-pattern>/CadastrarNoticia</url-pattern>
@@ -80,5 +84,9 @@
     <servlet-mapping>
           <servlet-name>Selecionar_Noticia</servlet-name>
           <url-pattern>/SelecionarNoticia</url-pattern>
+      </servlet-mapping>
+      <servlet-mapping>
+          <servlet-name>Selecionar_Noticias</servlet-name>
+          <url-pattern>/SelecionarNoticias</url-pattern>
       </servlet-mapping>
 </web-app>

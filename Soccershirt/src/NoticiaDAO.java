@@ -70,7 +70,7 @@ public class NoticiaDAO {
         }
     }
 
-
+// opa git 2
 
     public void removerNoticia(int id) {
         String sql = "delete from noticia where idUnica=?";
